@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>📌 교육기간확인 선택 조회</title>
+  <style>
+    :root{
+      --bg:#070a14; --card:#0e1733; --muted:#a9b7d7; --text:#eef3ff;
+      --accent:#7aa2ff; --danger:#ff6b6b; --border: rgba(122,162,255,.18);
+      --tableHead: rgba(122,162,255,.14);
+      --tableRow: rgba(255,255,255,.03);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(122,162,255,.18), transparent 60%),
+        linear-gradient(180deg, #050712, #070a14 30%, #050712);
+      color: var(--text);
+      padding-bottom: 84px;
+    }
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 18px 14px; }
+    h1{ margin: 0 0 6px; font-size: 18px; }
+    .sub{ margin:0 0 14px; color: var(--muted); font-size: 12.5px; line-height:1.45; }
+    .pill{
+      display:inline-block; padding: 4px 9px; border-radius: 999px;
+      border: 1px solid rgba(169,183,215,.2);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 12px;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+    .card{
+      background: rgba(14,23,51,.92);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: 0 12px 28px rgba(0,0,0,.28);
+      margin-bottom: 12px;
+    }
+    .card h2{ margin:0 0 10px; font-size: 13px; color:#dbe5ff; }
+    label{ display:block; font-size: 12px; color: var(--muted); margin: 10px 0 6px; }
+    input, select, textarea{
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(169,183,215,.22);
+      background: rgba(4,8,18,.65);
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+      font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(122,162,255,.75);
+      box-shadow: 0 0 0 3px rgba(122,162,255,.12);
+    }
+    .row{ display:grid; grid-template-columns: 1fr; gap: 10px; }
+    @media (min-width: 640px){ .row{ grid-template-columns: 1fr 1fr 1fr; } }
+    .status{ margin-top: 10px; font-size: 12px; color: var(--muted); line-height:1.45; }
+    .status b{ color: #dbe5ff; }
+    .hint{ font-size: 12px; color: var(--muted); line-height:1.5; margin-top:8px; }
+    details{ border-radius: 14px; overflow: hidden; }
+    details > summary{
+      cursor: pointer;
+      list-style: none;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(169,183,215,.18);
+      background: rgba(255,255,255,.04);
+      color:#dbe5ff;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    details > summary::-webkit-details-marker{ display:none; }
+    .actionbar{
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(6,10,20,.72);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(169,183,215,.14);
+    }
+    .actionbar .inner{ max-width: 980px; margin: 0 auto; display:flex; gap:10px; }
+    button{
+      border: 0;
+      border-radius: 14px;
+      padding: 12px 12px;
+      cursor: pointer;
+      font-weight: 900;
+      font-size: 14px;
+      flex:1;
+    }
+    .primary{ background: var(--accent); color:#061028; }
+    .copy{ background: rgba(255,255,255,.06); color: var(--text); border: 1px solid rgba(169,183,215,.22); }
+    .danger{ background: rgba(255,107,107,.14); color: #ffd5d5; border: 1px solid rgba(255,107,107,.35); flex: 0 0 auto; }
+
+    /* Table */
+    .tableWrap{
+      overflow:auto;
+      border-radius: 14px;
+      border: 1px solid rgba(169,183,215,.18);
+      background: rgba(4,8,18,.35);
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      min-width: 1100px;
+    }
+    thead th{
+      position: sticky;
+      top: 0;
+      background: var(--tableHead);
+      color: #e9efff;
+      text-align: left;
+      font-size: 13px;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(169,183,215,.2);
+      white-space: nowrap;
+    }
+    tbody td{
+      font-size: 13.5px;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(169,183,215,.12);
+      background: rgba(255,255,255,.02);
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(odd) td{ background: rgba(255,255,255,.03); }
+    .countLine{
+      display:flex; align-items:center; justify-content:space-between; gap: 10px;
+      margin: 6px 0 10px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    .countLine b{ color:#dbe5ff; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .hide{ display:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📌 교육기간확인 선택 조회</h1>
+    <p class="sub">
+      >> 사용 방법<br/>
+      <span class="pill">① 부서선택(1/2)</span>
+      <span class="pill">② 교육기간확인 선택</span>
+      <span class="pill">③ 가져오기 & 생성</span>
+      <span class="pill">④ Copy로 붙여넣기 / 엑셀 다운로드</span>
+    </p>
+
+    <div class="card">
+      <h2>선택</h2>
+      <div class="row">
+        <div>
+          <label>부서선택</label>
+          <select id="dept">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+          </select>
+        </div>
+        <div>
+          <label>교육기간확인 (M열)</label>
+          <select id="month">
+            <option value="등반">등반</option>
+            <option value="등반보류">등반보류</option>
+            <option value="등반예정">등반예정</option>
+            <option value="교육중(1)">교육중(1)</option>
+            <option value="교육중(2)">교육중(2)</option>
+          </select>
+        </div>
+        <div>
+          <label>옵션</label>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:2px;">
+            <label style="margin:0; display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px;">
+              <input type="checkbox" id="optAutoCopy" style="width:auto; transform: scale(1.1);" />
+              생성 후 자동 Copy (TSV)
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="card">
+      <h2>결과</h2>
+      <div class="countLine">
+        <div>선택 값: <b id="pickedValue">-</b></div>
+        <div>인원: <b id="pickedCount">0</b>명</div>
+      </div>
+
+      <div class="tableWrap">
+        <table id="resultTable" aria-label="result">
+          <thead>
+            <tr>
+              <th>예꼬이름</th>
+              <th>성별</th>
+              <th>임시반명</th>
+              <th>생년월일</th>
+              <th>주보호자</th>
+              <th>어머니연락처</th>
+              <th>주소</th>
+              <th>교육기간확인</th>
+              <th>비고</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="9" style="color:rgba(169,183,215,.9);">가져오기 &amp; 생성 버튼을 누르면 표시됩니다.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Copy 용 TSV(숨김) -->
+      <textarea id="copyBuffer" class="hide"></textarea>
+
+      <div class="hint">
+        • 필터 기준: B열(부서=1/2) + M열(교육기간확인)이 선택값과 일치하는 행<br/>
+        • 출력 컬럼: F~N (예꼬이름~비고) / 정렬: H(내림차순) → F(올림차순)<br/>
+        • 개인정보(연락처 등)는 출력하지 않습니다.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>설정 (최초 1회)</h2>
+      <details open>
+        <summary>시트 링크 설정</summary>
+        <div style="padding-top:10px;">
+          <label>Google Sheets 링크</label>
+          <input id="linkSheet" placeholder="https://docs.google.com/spreadsheets/d/..." />
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button class="primary" type="button" id="btnSave" style="flex:1;">설정 저장</button>
+            <button class="copy" type="button" id="btnLoad" style="flex:1;">설정 불러오기</button>
+            <button class="danger" type="button" id="btnReset">초기화</button>
+          </div>
+
+          <div class="hint">
+            • 시트는 “공유: 링크 있는 사용자 보기” 상태여야 불러올 수 있어요.<br/>
+                        • 링크의 gid가 특정 시트를 가리키면 그 시트에서 바로 읽습니다.
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="actionbar">
+    <div class="inner">
+      <button class="primary" id="btnFetch" type="button">가져오기 &amp; 생성</button>
+      <button class="copy" id="btnExcel" type="button">엑셀(.xlsx) 다운로드</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const LS_KEY = "edu_period_confirm_tool_v1";
+
+    const DEFAULT_LINKS = {
+      dept: "2",
+      linkSheet1: "https://docs.google.com/spreadsheets/d/16VS2GB8oje618-CqKB7SM4fj0x3nklE9/edit?gid=275581885#gid=275581885",
+      linkSheet2: "https://docs.google.com/spreadsheets/d/16VS2GB8oje618-CqKB7SM4fj0x3nklE9/edit?gid=275581885#gid=275581885"
+    };
+
+    function ensureDefaultLinks(){
+      const deptEl = $("dept");
+      const linkEl = $("linkSheet");
+
+      const dept = (deptEl && String(deptEl.value||"").trim()) || DEFAULT_LINKS.dept || "2";
+      const link = (dept === "1") ? DEFAULT_LINKS.linkSheet1 : DEFAULT_LINKS.linkSheet2;
+
+      if(deptEl && String(deptEl.value||"").trim() === "" && DEFAULT_LINKS.dept){
+        deptEl.value = DEFAULT_LINKS.dept;
+      }
+
+      if(linkEl){
+        linkEl.value = link;
+      }
+    }
+
+    function escapeHtml(str=""){
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+    }
+    function setStatus(msg, isError=false){
+      const el = $("status");
+      el.innerHTML = isError ? `⚠️ <b>${escapeHtml(msg)}</b>` : `✅ <b>${escapeHtml(msg)}</b>`;
+      el.style.color = isError ? "rgba(255,160,160,.95)" : "rgba(180,210,255,.95)";
+    }
+
+    function getSettings(){ return { dept: $("dept").value, linkSheet: $("linkSheet").value.trim() }; }
+    function applySettings(s){ if(s.dept) $("dept").value = s.dept; $("linkSheet").value = s.linkSheet || ""; }
+    function saveSettings(){
+      localStorage.setItem(LS_KEY, JSON.stringify(getSettings()));
+      setStatus("설정을 저장했습니다.");
+    }
+    function loadSettings(){
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw){ applySettings({}); setStatus("저장된 설정이 없습니다. 기본값으로 시작합니다."); return; }
+      try{ applySettings(JSON.parse(raw)); setStatus("설정을 불러왔습니다."); }
+      catch(e){ applySettings({}); setStatus("설정 불러오기 실패(저장값 손상).", true); }
+    }
+    function resetSettings(){
+      localStorage.removeItem(LS_KEY);
+      applySettings({});
+      setStatus("설정을 초기화했습니다.");
+    }
+
+    // --- Google Sheets JSONP (CORS 회피)
+    function parseSheetLink(link){
+      if(!link) return null;
+      const m = link.match(/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+      if(!m) return null;
+      const id = m[1];
+      const gidM = link.match(/gid=([0-9]+)/);
+      const gid = gidM ? gidM[1] : null;
+      return { id, gid };
+    }
+
+    function jsonp(url, { timeoutMs = 15000 } = {}){
+      return new Promise((resolve, reject) => {
+        const cb = "__bm_cb_" + Math.random().toString(36).slice(2);
+        const script = document.createElement("script");
+        const timer = setTimeout(() => {
+          cleanup();
+          reject(new Error("시간 초과: 시트 응답이 없습니다(공유 설정/네트워크 확인)."));
+        }, timeoutMs);
+
+        function cleanup(){
+          clearTimeout(timer);
+          try{ delete window[cb]; }catch(_){}
+          if(script && script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[cb] = (data) => { cleanup(); resolve(data); };
+        script.onerror = () => { cleanup(); reject(new Error("로드 실패: 시트가 비공개이거나 네트워크/CORS 문제가 있습니다(공유: 링크 보기 필요).")); };
+
+        const joiner = url.includes("?") ? "&" : "?";
+        script.src = url + joiner + "tqx=" + encodeURIComponent(`out:json;responseHandler:${cb}`);
+        document.head.appendChild(script);
+      });
+    }
+
+    async function fetchSheetTable(link){
+      const info = parseSheetLink(link);
+      if(!info) throw new Error("시트 링크 형식을 인식할 수 없습니다.");
+
+      // gid가 있으면 해당 시트로
+      const gidParam = info.gid ? `gid=${encodeURIComponent(info.gid)}` : "";
+      const base = `https://docs.google.com/spreadsheets/d/${info.id}/gviz/tq?${gidParam}`;
+
+      const data = await jsonp(base);
+      if(!data || !data.table) throw new Error("시트 응답이 올바르지 않습니다(공유 설정 확인: 링크 있는 사용자 보기).");
+
+      const headers = (data.table.cols || []).map(c => (c.label || "").trim() || "");
+      const rows = (data.table.rows || []).map(r => (r.c || []).map(cell => cell ? (cell.f ?? cell.v ?? "") : ""));
+      return { headers, rows };
+    }
+
+    function findCol(headers, patterns){
+      const hs = (headers || []).map(h => String(h||"").trim());
+      for(let i=0;i<hs.length;i++){
+        const h = hs[i].toLowerCase();
+        for(const p of patterns){
+          if(p.test(h)) return i;
+        }
+      }
+      return -1;
+    }
+
+    function parseMonthNumber(v){
+      const s = String(v ?? "").trim();
+      // 1, 01, 1월, " 1 ", etc.
+      const m = s.match(/(\d{1,2})/);
+      if(!m) return null;
+      const n = parseInt(m[1], 10);
+      return (n >= 1 && n <= 12) ? n : null;
+    }
+
+    function clearBody(){
+      const tb = $("tbody");
+      tb.innerHTML = "";
+    }
+
+    function renderTable(rows){
+      const tb = $("tbody");
+      tb.innerHTML = "";
+      if(!rows.length){
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 9;
+        td.textContent = "해당 월 데이터 없음";
+        td.style.color = "rgba(169,183,215,.9)";
+        tr.appendChild(td);
+        tb.appendChild(tr);
+        return;
+      }
+      for(const r of rows){
+        const tr = document.createElement("tr");
+        for(const val of r){
+          const td = document.createElement("td");
+          td.textContent = val;
+          tr.appendChild(td);
+        }
+        tb.appendChild(tr);
+      }
+    }
+
+    function buildTSV(rows){
+      const header = ["예꼬이름","성별","임시반명","생년월일","주보호자","어머니연락처","주소","교육기간확인","비고"];
+      const lines = [header.join("\t")];
+      for(const r of rows){
+        lines.push(r.map(x => String(x ?? "")).join("\t"));
+      }
+      return lines.join("\n");
+    }
+
+    async function copyToClipboard(text){
+      if(!String(text||"").trim()) throw new Error("복사할 내용이 없습니다.");
+      try{
+        await navigator.clipboard.writeText(text);
+        return true;
+      }catch(e){
+        const ta = $("copyBuffer");
+        ta.classList.remove("hide");
+        ta.value = text;
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand("copy");
+        ta.classList.add("hide");
+        if(!ok) throw e;
+        return true;
+      }
+    }
+
+    async function handleFetch(){
+      const selected = String(($("month").value||"").trim()); // 교육기간확인(M열) 선택값
+      const autoCopy = $("optAutoCopy").checked;
+      const dept = String(($("dept") && $("dept").value) || "2").trim(); // B열(부서)
+      const link = (dept === "1") ? DEFAULT_LINKS.linkSheet1 : DEFAULT_LINKS.linkSheet2;
+
+      // 링크 입력칸도 동기화
+      if($("linkSheet")) $("linkSheet").value = link;
+
+      $("pickedValue").textContent = selected || "-";
+      $("pickedCount").textContent = "0";
+      clearBody();
+
+      if(!selected){ setStatus("교육기간확인을 선택해주세요.", true); return; }
+      if(!link){ setStatus("시트 링크가 비어있습니다(설정에서 입력).", true); return; }
+
+      setStatus("시트를 불러오는 중...");
+
+      try{
+        const table = await fetchSheetTable(link);
+        const headers = table.headers || [];
+        const rows = table.rows || [];
+
+        // 헤더가 있어도, 이 시트는 고정 컬럼이라 A=0 기준으로 사용
+        const colDept = 1;  // B 부서
+        const colF = 5;     // F 예꼬이름
+        const colG = 6;     // G 성별
+        const colH = 7;     // H 임시반명
+        const colI = 8;     // I 생년월일
+        const colJ = 9;     // J 주보호자
+        const colK = 10;    // K 어머니연락처
+        const colL = 11;    // L 주소
+        const colM = 12;    // M 교육기간확인(등반확인)
+        const colN = 13;    // N 비고
+
+        const filtered = [];
+        for(const r of rows){
+          if(!r || !r.some(v => String(v||"").trim() !== "")) continue;
+
+          const rDept = String(r[colDept] ?? "").trim();
+          if(rDept !== dept) continue;
+
+          const rStatus = String(r[colM] ?? "").trim();
+          if(rStatus !== selected) continue;
+
+          const out = [
+            String(r[colF] ?? "").trim(),
+            String(r[colG] ?? "").trim(),
+            String(r[colH] ?? "").trim(),
+            String(r[colI] ?? "").trim(),
+            String(r[colJ] ?? "").trim(),
+            String(r[colK] ?? "").trim(),
+            String(r[colL] ?? "").trim(),
+            String(r[colM] ?? "").trim(),
+            String(r[colN] ?? "").trim(),
+          ];
+          if(!out[0]) continue;
+          filtered.push(out);
+        }
+
+        // 정렬: H 내림차순 -> F 올림차순
+        filtered.sort((a,b)=>{
+          const h = String(b[2]||"").localeCompare(String(a[2]||""), "ko", {numeric:true, sensitivity:"base"});
+          if(h) return h;
+          return String(a[0]||"").localeCompare(String(b[0]||""), "ko", {numeric:true, sensitivity:"base"});
+        });
+
+        renderTable(filtered);
+        $("pickedCount").textContent = String(filtered.length);
+
+        const tsv = buildTSV(filtered);
+        $("copyBuffer").value = tsv;
+
+        setStatus(`생성 완료: ${filtered.length}명`);
+
+        if(autoCopy){
+          await copyToClipboard(tsv);
+          setStatus(`생성 완료 + 자동 Copy (${filtered.length}명)`);
+        }
+      }catch(e){
+        clearBody();
+        const tb = $("tbody");
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 9;
+        td.textContent = "오류: " + (e.message || String(e));
+        td.style.color = "rgba(255,160,160,.95)";
+        tr.appendChild(td);
+        tb.appendChild(tr);
+        setStatus(e.message || String(e), true);
+      }
+    }
+
+    async function handleExcel(){
+      try{
+        const tsv = $("copyBuffer").value;
+        if(!String(tsv||"").trim()){
+          setStatus("다운로드할 내용이 없습니다. 먼저 가져오기 & 생성 을 눌러주세요.", true);
+          return;
+        }
+        if(typeof XLSX === "undefined"){
+          setStatus("엑셀 라이브러리를 불러오지 못했습니다(네트워크/차단 설정 확인).", true);
+          return;
+        }
+
+        // TSV -> AOA
+        const lines = tsv.split(/\r?\n/).filter(l => l !== "");
+        const aoa = lines.map(line => line.split("\t"));
+
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        const wb = XLSX.utils.book_new();
+
+        const month = String($("month").value || "").trim();
+        const sheetName = `교육기간_${month}`;
+        XLSX.utils.book_append_sheet(wb, ws, sheetName.slice(0, 31));
+
+        const filename = `교육기간확인_${month}_명단.xlsx`;
+        XLSX.writeFile(wb, filename);
+        setStatus("엑셀(.xlsx) 파일을 다운로드했습니다.");
+      }catch(e){
+        setStatus("엑셀 다운로드 실패: " + (e.message || String(e)), true);
+      }
+    }
+
+
+
+    async function handleCopy(){
+      try{
+        const text = $("copyBuffer").value;
+        await copyToClipboard(text);
+        setStatus("클립보드에 복사했습니다 (TSV).");
+      }catch(e){
+        setStatus("복사 실패: 브라우저 권한/보안(HTTPS) 확인", true);
+      }
+    }
+
+    $("btnFetch").addEventListener("click", handleFetch);
+    $("btnExcel").addEventListener("click", handleExcel);
+    $("btnSave").addEventListener("click", () => saveSettings());
+    $("btnLoad").addEventListener("click", () => { loadSettings(); ensureDefaultLinks(); });
+    $("btnReset").addEventListener("click", () => { resetSettings(); ensureDefaultLinks(); });
+    $("dept").addEventListener("change", () => {
+      const dept = String($("dept").value || "2");
+      const link = (dept === "1") ? DEFAULT_LINKS.linkSheet1 : DEFAULT_LINKS.linkSheet2;
+      $("linkSheet").value = link;
+      // 부 변경 시 즉시 저장(링크가 안 저장되는 문제 방지)
+      try{ saveSettings(); }catch(_e){}
+      setStatus("부서 선택 변경: " + dept);
+    });
+
+    // default month = 현재 월
+    (function initDefault(){
+      // 기본값: 첫 옵션
+      const sel = $("month");
+      if(sel && sel.options && sel.options.length) sel.selectedIndex = 0;
+      $("pickedValue").textContent = (sel && sel.value) ? sel.value : "-";
+    })();
+
+    loadSettings();
+    ensureDefaultLinks();
+  </script>
+</body>
+</html>
